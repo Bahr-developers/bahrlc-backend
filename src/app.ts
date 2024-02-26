@@ -1,4 +1,4 @@
-import { LanguageModule } from '@modules';
+import { LanguageModule, TranslateModule } from '@modules';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
   imports: [
     MongooseModule.forRoot('mongodb://0.0.0.0:27017/bahrtech'),
     LanguageModule,
+    TranslateModule,
   ],
 })
 export class AppModule {}

@@ -27,12 +27,12 @@ export class LanguageController {
     await this.languageService.createLanguage(payload);
   }
 
-  @Patch(':id')
+  @Patch('edit/:id')
   async updateLanguage(@Param('id') id: string) {
     await this.languageService.updateLanguage({ id, title: 'salomlar update' });
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   async delete(@Param('id') id: string) {
     return this.languageService.deleteLanguage(id);
   }
