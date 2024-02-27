@@ -26,7 +26,10 @@ export class LanguageService {
   }
 
   async getLanguageList(): Promise<Language[]> {
-    return await this.languageModel.find().exec();
+    return await this.languageModel
+      .find()
+      .select(['title', 'id', 'code'])
+      .exec();
   }
 
   async updateLanguage(payload: UpdateLanguageRequest): Promise<void> {

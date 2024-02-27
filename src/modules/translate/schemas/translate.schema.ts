@@ -19,7 +19,7 @@ export class Translate {
   @Prop({ enum: status, default: 'active' })
   status: string;
 
-  @Prop({type: [Types.ObjectId], ref: "Definition"})
+  @Prop({type: [Types.ObjectId], ref: "Definition", required: true })
   definitions: Definition[]
 }
 

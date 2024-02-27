@@ -28,13 +28,14 @@ export class TranslateService {
   ) {}
 
   async getTranslateList(): Promise<Translate[]> {
-    return await this.translateModel.find().populate('definitions').exec();
+    return await this.translateModel.find().select(["-updatedAt", "-createdAt"]).populate('definitions', ["value", "id"]).exec();
   }
 
   async getUnusedTranslateList(): Promise<Translate[]> {
     return await this.translateModel
       .find({ status: 'inactive' })
-      .populate('definitions')
+      .select(["-updatedAt", "-createdAt"])
+      .populate('definitions', ["value", "id"])
       .exec();
   }
 
@@ -93,13 +94,40 @@ export class TranslateService {
     await this.#_checkTranslate(payload.id);
     const foundedTranslate = await this.translateModel.findById(payload.id);
 
-    if (payload.status == 'active' && foundedTranslate.status == 'active') {
-      throw new ConflictException('Translate is already in use');
+    if (payload?.status) {
+      if (payload.status == 'active' && foundedTranslate.status == 'active') {
+        throw new ConflictException('Translate is already in use');
+      }
+
+      await this.translateModel.findByIdAndUpdate(foundedTranslate.id, {
+        status: payload.status,
+      });
     }
 
-    foundedTranslate.updateOne({ status: payload.status });
+    if (payload?.definition) {
+      for (const df of foundedTranslate.definitions) {
+        await this.definitionModel.findByIdAndDelete(df);
+      }
 
-    foundedTranslate.save();
+      await this.translateModel.findByIdAndUpdate(payload.id, {
+        definitions: [],
+      });
+
+      for (const item of Object.entries(payload.definition)) {
+        const language = await this.languageModel.findOne({ code: item[0] });
+
+        const newDefinition = await this.definitionModel.create({
+          languageId: language.id,
+          translateId: foundedTranslate.id,
+          value: item[1],
+        });
+
+        await this.translateModel.findByIdAndUpdate(foundedTranslate.id, {
+          $push: { definitions: newDefinition.id },
+        });
+        newDefinition.save();
+      }
+    }
   }
 
   async updateDefinition(payload: DefinitionUpdateRequest): Promise<void> {
@@ -118,7 +146,11 @@ export class TranslateService {
   async deleteTranslate(id: string) {
     await this.#_checkID(id);
 
-    await this.translateModel.findByIdAndDelete(id, { populate: 'definition' });
+    const translate = await this.translateModel.findById(id);
+
+    await this.definitionModel.deleteMany({ translateId: translate.id });
+
+    await this.translateModel.findByIdAndDelete(id);
   }
 
   async #_checkLanguage(code: string): Promise<void> {
