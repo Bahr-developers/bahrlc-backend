@@ -13,7 +13,6 @@ async function bootstrap() {
     .setTitle('Bahr LC')
     .setDescription('The Bahr Learning Centre API description')
     .setVersion('1.0')
-    .addTag('bahrlc')
     .addBearerAuth(
       {
         type: 'http',
