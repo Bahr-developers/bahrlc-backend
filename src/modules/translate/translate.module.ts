@@ -20,5 +20,6 @@ import {
   ],
   controllers: [TranslateController],
   providers: [TranslateService],
+  exports: [TranslateService]
 })
 export class TranslateModule {}

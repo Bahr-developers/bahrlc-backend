@@ -15,7 +15,10 @@ import {
   UpdateDefinitionDto,
   UpdateTranslateDto,
 } from './dtos';
-import { GetSingleTranslateResponse } from './interfaces';
+import { 
+  GetSingleTranslateResponse, 
+  GetSingleTranslateByCodeResponse 
+} from './interfaces';
 import { Translate } from './schemas';
 
 @ApiTags('Translate')
@@ -33,6 +36,17 @@ export class TranslateController {
   @Get()
   async getTranslateList(): Promise<Translate[]> {
     return await this.#_service.getTranslateList();
+  }
+
+  @Get('single/:code')
+  async getSingleTranslateByCode(
+    @Headers('accept-language') languageCode: string,
+    @Param('code') translateCode: string,
+  ): Promise<GetSingleTranslateByCodeResponse> {
+    return await this.#_service.getSingleTranslateByCode({
+      languageCode,
+      translateCode
+      });
   }
 
   @Get('/unused')
