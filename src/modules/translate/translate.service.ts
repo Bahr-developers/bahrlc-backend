@@ -10,6 +10,8 @@ import {
   GetSingleTranslateRequest,
   GetSingleTranslateResponse,
   UpdateTranslateRequest,
+  GetSingleTranslateByCodeRequest,
+  GetSingleTranslateByCodeResponse
 } from './interfaces';
 import { Model, isValidObjectId } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -66,6 +68,28 @@ export class TranslateService {
       newDefinition.save();
     }
     translate.save();
+  }
+
+  async getSingleTranslateByCode(
+    payload: GetSingleTranslateByCodeRequest,
+  ): Promise<GetSingleTranslateByCodeResponse> {
+    await this.#_checkLanguage(payload.languageCode);
+    await this.#_checkTranslateByCode(payload.translateCode);
+
+    const language = await this.languageModel.findOne({
+      code: payload.languageCode,
+    });
+
+    const translate = await this.translateModel.findOne({code:payload.translateCode});
+        
+    const definition = await this.definitionModel.findOne({
+      languageId: language.id,
+      translateId: translate.id,
+    });    
+    return {
+      code: translate.code,
+      value: definition?.value
+    };
   }
 
   async getSingleTranslate(
@@ -162,8 +186,16 @@ export class TranslateService {
   async #_checkTranslate(id: string): Promise<void> {
     await this.#_checkID(id);
     const translate = await this.translateModel.findById(id);
+    console.log(translate);
+    
 
     if (!translate) throw new NotFoundException('Translate not found');
+  }
+
+  async #_checkTranslateByCode(code: string): Promise<void> {
+    const translate = await this.translateModel.findOne({code:code});
+  
+    if (!translate) throw new NotFoundException('Translate Code not found');
   }
 
   async #_checkExistingTranslate(code: string): Promise<void> {
