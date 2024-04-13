@@ -9,6 +9,10 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
+  app.enableCors({
+    origin:"*"
+  })
+
   const config = new DocumentBuilder()
     .setTitle('Bahr LC')
     .setDescription('The Bahr Learning Centre API description')
