@@ -6,12 +6,14 @@ import {
     Param,
     Delete,
     UseInterceptors,
-    UploadedFiles
+    UploadedFiles,
+    Body
   } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Partners } from './schemas';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { PartnerService } from './partners.service';
+import { CreatePartnerDto } from './dtos';
   
   @ApiTags('Partners')
   @Controller({
@@ -25,12 +27,14 @@ import { PartnerService } from './partners.service';
       this.#_partnerService = project;
     }
   
+    @ApiConsumes('multipart/form-data')
     @Post('add')
     @UseInterceptors(FilesInterceptor('image'))
     createProject(
-      @UploadedFiles() image: any
+      @UploadedFiles() image: any,
+      @Body() payload: CreatePartnerDto,
     ): Promise<void> {
-      return this.#_partnerService.createPartners(image);
+      return this.#_partnerService.createPartners({image, ...payload});
     }
 
     @Get('find/all')
@@ -39,6 +43,7 @@ import { PartnerService } from './partners.service';
         return await this.#_partnerService.getPartnersList();
     }
 
+    @ApiConsumes('multipart/form-data')
     @Patch('edit/:id')
     @UseInterceptors(FilesInterceptor('image'))
     async updateProject(
