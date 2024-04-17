@@ -1,4 +1,4 @@
-import { CreateProjectInterface, UpdateProjectRequest } from './interfaces';
+import { CreatePartnerInterface, UpdatePartnerRequest } from './interfaces';
 import {
   ConflictException,
   Injectable,
@@ -17,7 +17,7 @@ export class PartnerService {
     private fileService: FilesService,
   ) {}
 
-  async createPartners(payload: CreateProjectInterface): Promise<void> {
+  async createPartners(payload: CreatePartnerInterface): Promise<void> {
 
     const file = await this.fileService.createFile(payload[0]);
     
@@ -37,7 +37,7 @@ export class PartnerService {
      return data
   }
 
-  async updatePartner(payload: UpdateProjectRequest): Promise<void> {
+  async updatePartner(payload: UpdatePartnerRequest): Promise<void> {
     await this.#_checkPartner(payload.id);
 
     const deleteImageFile = await this.partnersModel.findById(payload.id)

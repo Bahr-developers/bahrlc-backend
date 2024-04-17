@@ -1,4 +1,4 @@
-export declare interface UpdateProjectRequest {
+export declare interface UpdatePartnerRequest {
     id: string;
     image?:any
   }

@@ -1,4 +1,4 @@
-export declare interface CreateProjectInterface {
+export declare interface CreatePartnerInterface {
     image:any    
 }
 
