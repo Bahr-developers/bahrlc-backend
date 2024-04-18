@@ -25,10 +25,7 @@ export class ProjectService {
     await this.#_checkExistingProject(payload.name);
     await this.checkTranslate(payload.name)
 
-    const files = await Promise.all(payload.images.map(photo => this.fileService.createFile(photo)));
-    
-    console.log(files);
-    
+    const files = await Promise.all(payload.images.map(photo => this.fileService.createFile(photo)));    
 
     const newProject = await this.projectModel.create({
       name: payload.name,
@@ -74,7 +71,7 @@ export class ProjectService {
     const deleteImageFile = await this.projectModel.findById(payload.id)
 
     for(let photo of deleteImageFile.image_urls){
-      await this.fileService.deleteImage(photo)
+      await this.fileService.deleteImage(photo).catch(undefined => undefined)
     }
     
     const files = await Promise.all(payload.images.map(photo => this.fileService.createFile(photo)));
@@ -102,7 +99,7 @@ export class ProjectService {
     await this.#_checkProject(id);
     const deleteImageFile = await this.projectModel.findById(id)
     for(let photo of deleteImageFile.image_urls){
-      await this.fileService.deleteImage(photo)
+      await this.fileService.deleteImage(photo).catch(undefined => undefined)
     }
 
     await this.projectModel.findByIdAndDelete({ _id: id });

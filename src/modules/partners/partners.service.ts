@@ -7,7 +7,6 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Partners } from './schemas';
 import { Model, isValidObjectId } from 'mongoose';
-import { Translate, TranslateService } from '../translate';
 import { FilesService } from '../file/file.service';
 
 @Injectable()
@@ -18,48 +17,46 @@ export class PartnerService {
   ) {}
 
   async createPartners(payload: CreatePartnerInterface): Promise<void> {
-
     const file = await this.fileService.createFile(payload.image[0]);
 
     const newPartner = await this.partnersModel.create({
-      image_url:file,
+      image_url: file,
     });
 
     newPartner.save();
   }
 
   async getPartnersList(): Promise<Partners[]> {
-    const data =  await this.partnersModel
-      .find()
-      .select('image_url')
-      .exec();
-     return data
+    const data = await this.partnersModel.find().select('image_url').exec();
+    return data;
   }
 
   async updatePartner(payload: UpdatePartnerRequest): Promise<void> {
     await this.#_checkPartner(payload.id);
 
-    const deleteImageFile = await this.partnersModel.findById(payload.id)
+    const deleteImageFile = await this.partnersModel.findById(payload.id);
 
-    await this.fileService.deleteImage(deleteImageFile.image_url)    
+    await this.fileService.deleteImage(deleteImageFile.image_url).catch(undefined => undefined);
 
     const file = await this.fileService.createFile(payload.image[0]);
     await this.partnersModel.findByIdAndUpdate(
-      {_id:payload.id},
+      { _id: payload.id },
       {
-      image_url:file,
-    });
+        image_url: file,
+      },
+    );
   }
 
   async deletePartner(id: string): Promise<void> {
     await this.#_checkPartner(id);
-    const deleteImageFile = await this.partnersModel.findById(id)
-    console.log(deleteImageFile.image_url);
-      await this.fileService.deleteImage(deleteImageFile.image_url)
+    const deleteImageFile = await this.partnersModel.findById(id);
+
+    await this.fileService
+      .deleteImage(deleteImageFile.image_url)
+      .catch((undefined) => undefined);
 
     await this.partnersModel.findByIdAndDelete({ _id: id });
   }
-
 
   async #_checkPartner(id: string): Promise<void> {
     await this.#_checkId(id);
