@@ -19,8 +19,7 @@ export class PartnerService {
 
   async createPartners(payload: CreatePartnerInterface): Promise<void> {
 
-    const file = await this.fileService.createFile(payload[0]);
-    
+    const file = await this.fileService.createFile(payload.image[0]);
 
     const newPartner = await this.partnersModel.create({
       image_url:file,
