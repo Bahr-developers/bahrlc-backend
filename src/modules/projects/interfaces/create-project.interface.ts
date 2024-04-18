@@ -4,5 +4,3 @@ export declare interface CreateProjectInterface {
     images:any    
     type: 'website' | 'crm' | 'erp' | 'mobile';
 }
-
-  

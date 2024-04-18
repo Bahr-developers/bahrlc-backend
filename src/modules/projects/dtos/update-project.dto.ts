@@ -1,12 +1,11 @@
-import { CreateProjectInterface, UpdateProjectRequest } from '../interfaces';
-import { IsObject, IsString, IsEnum } from 'class-validator';
+import { IsString, IsEnum, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 enum type {
   mobile = 'mobile',
   crm = 'crm',
   website = 'website',
-  erp = 'erp'
+  erp = 'erp',
 }
 
 export class UpdateProjectDto {
@@ -18,7 +17,7 @@ export class UpdateProjectDto {
   name?: string;
 
   @ApiProperty({
-    example: "dachivgorax.uz",
+    example: 'dachivgorax.uz',
     required: true,
   })
   @IsString()
@@ -31,4 +30,15 @@ export class UpdateProjectDto {
   @IsEnum(type)
   @IsString()
   type?: 'crm' | 'mobile' | 'website' | 'erp';
+
+  @ApiProperty({
+    type: 'array',
+    required: false,
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @IsOptional()
+  images: any;
 }

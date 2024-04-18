@@ -1,15 +1,15 @@
 import { CreateProjectInterface } from '../interfaces';
-import { IsObject, IsString, IsEnum } from 'class-validator';
+import { IsString, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 enum type {
   mobile = 'mobile',
   crm = 'crm',
   website = 'website',
-  erp = 'erp'
+  erp = 'erp',
 }
 
-export class CreateProjectDto implements Omit<CreateProjectInterface, 'images'> {
+export class CreateProjectDto implements CreateProjectInterface {
   @ApiProperty({
     example: '660d5290e49538271705501e',
     required: true,
@@ -18,7 +18,7 @@ export class CreateProjectDto implements Omit<CreateProjectInterface, 'images'> 
   name: string;
 
   @ApiProperty({
-    example: "dachivgorax.uz",
+    example: 'dachivgorax.uz',
     required: true,
   })
   @IsString()
@@ -31,4 +31,13 @@ export class CreateProjectDto implements Omit<CreateProjectInterface, 'images'> 
   @IsEnum(type)
   @IsString()
   type: 'crm' | 'mobile' | 'website' | 'erp';
+
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  images: any;
 }
